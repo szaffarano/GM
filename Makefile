@@ -1,6 +1,6 @@
 CXXFLAGS=-Iinclude -Wall -DTEST
 
-main: MenuManager.o MenuEntry.o CursesDisplay.o Display.o main.o
+all: MenuManager.o MenuEntry.o CursesDisplay.o Display.o Queue.o main.o
 	${CXX} ${CXXFLAGS} -o main $^ -lncurses
 
 %.o: src/%.cpp

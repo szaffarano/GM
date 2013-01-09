@@ -1,17 +1,22 @@
 #include "MenuEntry.h"
+#include <stdio.h>
+#include <string.h>
 
-MenuEntry::MenuEntry(const char* title, Callback callback, MenuEntry** childs) {
-	this->title = title;
-	this->callback = callback;
+MenuEntry::MenuEntry(const char* title, MenuEntry** childs) {
+	this->title = new char[strlen(title)];
+	for(unsigned int i = 0; i < strlen(title); i++) {
+		this->title[i] = title[i];
+	}
 	this->childs = childs;
 }
 
-MenuEntry::MenuEntry(const char* title, MenuEntry** childs) {
-	MenuEntry(title, NULL, childs);
-}
-
-MenuEntry::MenuEntry(const char* title, Callback callback) {
-	MenuEntry(title, callback, new MenuEntry[0]);
+MenuEntry::MenuEntry(const char* title, Callback callback, void* data) {
+	this->title = new char[strlen(title)];
+	for(unsigned int i = 0; i < strlen(title); i++) {
+		this->title[i] = title[i];
+	}
+	this->callback = callback;
+	this->data = data;
 }
 
 bool MenuEntry::hasChilds() {
@@ -22,8 +27,14 @@ const char* MenuEntry::getTitle() {
 	return this->title;
 }
 
-Callback MenuEntry::getCallback() {
-	return this->callback;
+void MenuEntry::execute() {
+	if(callback != NULL) {
+		callback(data);
+	}
+}
+
+void MenuEntry::setCallbackData(void* data) {
+	this->data = data;
 }
 
 MenuEntry** MenuEntry::getChilds() {

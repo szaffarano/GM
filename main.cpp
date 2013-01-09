@@ -1,98 +1,95 @@
+#ifdef TEST
+
 #include "MenuEntry.h"
 #include "CursesDisplay.h"
 #include "MenuManager.h"
 #include <stdio.h>
 #include <curses.h>
 #include <unistd.h>
+#include "Queue.h"
 
-static void pp(Display* display, MenuEntry* menu[], int indent = 0);
+#define UP 65
+#define DOWN 66
+#define SELECT 10
+#define BACK 127
+
+static void back(void* data);
 
 int main(int argc, char* argv[]) {
 	Display* display = new CursesDisplay(16, 2);
+	MenuEntry* backEntry = new MenuEntry("Volver", back, NULL);
 	
-	MenuEntry* tempChilds[] = {
-			new MenuEntry("Setear Temp.", NULL, NULL),
-			new MenuEntry("Setear delta", NULL, NULL),
-			new MenuEntry("Volver", NULL, NULL),
+	MenuEntry* setTempChilds[] = {
+			new MenuEntry("Maxima", NULL),
+			new MenuEntry("Minima", NULL),
+			backEntry,
 			NULL };
 
+	MenuEntry* tempChilds[] = {
+			new MenuEntry("Setear Temp.", setTempChilds),
+			new MenuEntry("Setear delta", NULL),
+			new MenuEntry("Volver", NULL),
+			NULL };
+
+
 	MenuEntry* soundChilds[] = {
-			new MenuEntry("Activar", NULL, NULL),
-			new MenuEntry("Volumen", NULL, NULL),
-			new MenuEntry("Volver", NULL, NULL),
+			new MenuEntry("Activar", NULL),
+			new MenuEntry("Volumen", NULL),
+			new MenuEntry("Volver", NULL),
 			NULL };
 
 	MenuEntry* timerChilds[] = {
-			new MenuEntry("Setear hora", NULL, NULL),
-			new MenuEntry("Iniciar", NULL, NULL),
-			new MenuEntry("Sonido", NULL, soundChilds),
-			new MenuEntry("Volver", NULL, NULL),
+			new MenuEntry("Setear hora", NULL),
+			new MenuEntry("Iniciar", NULL),
+			new MenuEntry("Sonido", soundChilds),
+			new MenuEntry("Volver", NULL),
 			NULL };
 
 	MenuEntry* menu[] = {
-			new MenuEntry("Reloj", NULL, NULL),
-			new MenuEntry("Temperatura", NULL, tempChilds),
-			new MenuEntry("Temporizador", NULL, timerChilds),
-			new MenuEntry("Volver", NULL, NULL),
+			new MenuEntry("Reloj", NULL),
+			new MenuEntry("Temperatura", tempChilds),
+			new MenuEntry("Temporizador", timerChilds),
+			new MenuEntry("Volver", NULL),
 			NULL };
 
-	//pp(display, menu);
-	/*
-	display->setCursor(0,0);
-	display->print("hola");
-	display->setCursor(0,1);
-	display->print("mundo");
-	
-	getch();
-	
-	display->clear();
-	
-	char c = getch();
-	
-	delete display;
-
-	printf("saliste con %d\n", c);
-	
-	*/
-	
 	MenuManager* mm = new MenuManager(menu, display);
+	backEntry->setCallbackData(mm);
+
 	mm->draw();
-	
-	getch();
-	
-	mm->down();
-	mm->draw();
-	getch();
-	mm->up();
-	mm->draw();
-	getch();
-	
+	char pressed = 0;
+	while (pressed != 'q') {
+		pressed = getch();
+		switch(pressed) {
+		case UP:
+			mm->up();
+			break;
+		case DOWN:
+			mm->down();
+			break;
+		case SELECT:
+			mm->select();
+			break;
+		case BACK:
+			mm->back();
+			break;
+		}
+		mm->draw();
+	}
+
 	delete mm;
 	delete display;
-	
+
 	return 0;
 }
 
-void pp(Display* display, MenuEntry* menu[], int indent) {
-	int i = 0;
-
-	char prefix[indent + 1];
-	for (i = 0; i < indent; i++) {
-		prefix[i] = '\t';
+void back(void* data) {
+	if (data == NULL) {
+		printf ("estamos cagados\n");
+		return;
 	}
-	prefix[i] = '\0';
-
-	i = 0;
-	while (menu != NULL && menu[i] != NULL) {
-		MenuEntry* entry = menu[i];
-		char s[128];
-		sprintf(s, "%s%s\n", prefix, entry->getTitle());
-		display->print(s);
-		if (entry->hasChilds()) {
-			pp(display, entry->getChilds(), indent + 1);
-		}
-		i++;
-	}
+	printf ("data OK\n");
+	((MenuManager*)data)->back();
+	((MenuManager*)data)->draw();
 }
 
-
+#endif // TEST

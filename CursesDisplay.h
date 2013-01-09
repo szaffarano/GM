@@ -1,3 +1,5 @@
+#ifdef TEST
+
 #include "Display.h"
 #include <curses.h>
 #include <unistd.h>
@@ -16,4 +18,6 @@ public:
 	~CursesDisplay();
 };
 
-#endif
+#endif // CONSOLE DISPLAY
+
+#endif // TEST

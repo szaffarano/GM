@@ -1,34 +1,28 @@
 #include "MenuManager.h"
 #include <string.h>
 
+static void padTitle(char* buffer, const char* str, unsigned int cols);
+
 MenuManager::MenuManager(MenuEntry** menu, Display* display) {
 	this->menu = menu;
 	this->display = display;
-	
-	this->selected = 0;
+
+	this->firstVisibleEntry = 0;
+	this->currentEntry = 0;
 }
 
 void MenuManager::draw() {
+	display->clear();
+	char title[display->getCols() + 1];
 	for (int i = 0; i < display->getRows(); i++) {
 		display->setCursor(0, i);
-		char title[display->getCols()+1];
-		int j = 0, idx = 0;
-		
-		for (int k = 0; k < display->getCols()+1; k++) {
-			title[k] = ' ';
+
+		padTitle(title, currentMenu()[i+firstVisibleEntry]->getTitle(), display->getCols());
+
+		if (currentEntry == i+firstVisibleEntry) {
+			title[0] = '>';
 		}
-		title[display->getCols()] = '\0';
-		
-		if (selected == i) {
-			title[j++] = '[';
-			title[display->getCols()-1] = ']';
-		}
-		
-		
-		for (; idx < strlen(menu[i]->getTitle()); idx++) {
-			title[j++] = menu[i]->getTitle()[idx]; 
-		}
-		
+
 		display->print(title);
 	}
 }
@@ -37,18 +31,62 @@ void MenuManager::execute(MenuAction action) {
 }
 
 void MenuManager::up() {
-	selected--;
+	if (currentEntry != 0) {
+		currentEntry--;
+	} else {
+		currentEntry++;
+		while(currentMenu()[currentEntry+1] != NULL) {
+			++currentEntry;
+		}
+		firstVisibleEntry = display->getRows();
+	}
+	if (currentEntry < firstVisibleEntry) {
+		firstVisibleEntry = currentEntry;
+	}
 }
 
 void MenuManager::down() {
-	selected++;
+	if (currentMenu()[currentEntry+1] != NULL) {
+		currentEntry++;
+	} else {
+		currentEntry = firstVisibleEntry = 0;
+	}
+	if(currentEntry - firstVisibleEntry  == display->getRows()) {
+		firstVisibleEntry++;
+	}
 }
 
 void MenuManager::select() {
+	MenuEntry* current = currentMenu()[currentEntry];
+	if (current->hasChilds()) {
+		path.push(current);
+		currentEntry = firstVisibleEntry = 0;
+	}
+	current->execute();
 }
 
 void MenuManager::back() {
 }
 
+MenuEntry** MenuManager::currentMenu() {
+	if(path.isEmpty()) {
+		return menu;
+	}
+	return path.peek()->getChilds();
+}
+
 MenuManager::~MenuManager() {
+}
+
+void padTitle(char buffer[], const char* str, unsigned int cols) {
+	unsigned int i = 0;
+	buffer[i++] = ' ';
+	unsigned int size = strlen(str) > cols-1 ? cols-1 : strlen(str);
+	for (; i <= size; i++) {
+		buffer[i] = str[i-1];
+	}
+	for(; i < cols; i++) {
+		buffer[i] = ' ';
+	}
+	buffer[i] = '\0';
 }

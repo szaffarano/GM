@@ -1,3 +1,5 @@
+#ifdef TEST
+
 #include "CursesDisplay.h"
 #include <stdio.h>
 
@@ -6,6 +8,8 @@ static void nextFrame();
 
 CursesDisplay::CursesDisplay(int cols, int rows): Display(cols, rows) {
 	initscr();
+
+	noecho();
 
 	curs_set(0);
 
@@ -65,3 +69,4 @@ void fill(char* arr, int size, char value) {
 	arr[i] = '\0';
 }
 
+#endif
