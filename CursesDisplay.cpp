@@ -25,7 +25,7 @@ CursesDisplay::CursesDisplay(int cols, int rows): Display(cols, rows) {
 		mvaddch(++i, 0, '|');
 		mvaddch(i, cols+1, '|');
 	}
-	
+
 	move (1,1);
 	nextFrame();
 }
@@ -51,7 +51,6 @@ size_t CursesDisplay::print(const char ch) {
 	return printw("%c", ch);
 }
 
-
 CursesDisplay::~CursesDisplay() {
 	endwin();
 }
@@ -69,4 +68,4 @@ void fill(char* arr, int size, char value) {
 	arr[i] = '\0';
 }
 
-#endif
+#endif // TEST

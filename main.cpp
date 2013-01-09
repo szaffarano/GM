@@ -18,7 +18,7 @@ static void back(void* data);
 int main(int argc, char* argv[]) {
 	Display* display = new CursesDisplay(16, 2);
 	MenuEntry* backEntry = new MenuEntry("Volver", back, NULL);
-	
+
 	MenuEntry* setTempChilds[] = {
 			new MenuEntry("Maxima", NULL),
 			new MenuEntry("Minima", NULL),
@@ -28,38 +28,37 @@ int main(int argc, char* argv[]) {
 	MenuEntry* tempChilds[] = {
 			new MenuEntry("Setear Temp.", setTempChilds),
 			new MenuEntry("Setear delta", NULL),
-			new MenuEntry("Volver", NULL),
+			backEntry,
 			NULL };
-
 
 	MenuEntry* soundChilds[] = {
 			new MenuEntry("Activar", NULL),
 			new MenuEntry("Volumen", NULL),
-			new MenuEntry("Volver", NULL),
+			backEntry,
 			NULL };
 
 	MenuEntry* timerChilds[] = {
 			new MenuEntry("Setear hora", NULL),
 			new MenuEntry("Iniciar", NULL),
 			new MenuEntry("Sonido", soundChilds),
-			new MenuEntry("Volver", NULL),
+			backEntry,
 			NULL };
 
 	MenuEntry* menu[] = {
 			new MenuEntry("Reloj", NULL),
 			new MenuEntry("Temperatura", tempChilds),
 			new MenuEntry("Temporizador", timerChilds),
-			new MenuEntry("Volver", NULL),
+			backEntry,
 			NULL };
-
 	MenuManager* mm = new MenuManager(menu, display);
 	backEntry->setCallbackData(mm);
 
 	mm->draw();
+
 	char pressed = 0;
 	while (pressed != 'q') {
 		pressed = getch();
-		switch(pressed) {
+		switch (pressed) {
 		case UP:
 			mm->up();
 			break;
@@ -83,13 +82,8 @@ int main(int argc, char* argv[]) {
 }
 
 void back(void* data) {
-	if (data == NULL) {
-		printf ("estamos cagados\n");
-		return;
-	}
-	printf ("data OK\n");
-	((MenuManager*)data)->back();
-	((MenuManager*)data)->draw();
+	((MenuManager*) data)->back();
+	((MenuManager*) data)->draw();
 }
 
 #endif // TEST

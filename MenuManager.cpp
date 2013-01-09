@@ -4,26 +4,32 @@
 static void padTitle(char* buffer, const char* str, unsigned int cols);
 
 MenuManager::MenuManager(MenuEntry** menu, Display* display) {
-	this->menu = menu;
 	this->display = display;
+	this->path = new Queue<State*>(10);
 
-	this->firstVisibleEntry = 0;
-	this->currentEntry = 0;
+	this->path->push(new State(menu, 0, 0));
 }
 
 void MenuManager::draw() {
 	display->clear();
 	char title[display->getCols() + 1];
+
+	int first = path->peek()->getFirsVisible();
+	int current = path->peek()->getCurrent();
+	MenuEntry** menu = path->peek()->getMenu();
+
 	for (int i = 0; i < display->getRows(); i++) {
-		display->setCursor(0, i);
+		if (menu[i + first] != NULL) {
+			padTitle(title, menu[i + first]->getTitle(), display->getCols());
 
-		padTitle(title, currentMenu()[i+firstVisibleEntry]->getTitle(), display->getCols());
+			display->setCursor(0, i);
 
-		if (currentEntry == i+firstVisibleEntry) {
-			title[0] = '>';
+			if (current == i + first) {
+				title[0] = '>';
+			}
+
+			display->print(title);
 		}
-
-		display->print(title);
 	}
 }
 
@@ -31,48 +37,59 @@ void MenuManager::execute(MenuAction action) {
 }
 
 void MenuManager::up() {
-	if (currentEntry != 0) {
-		currentEntry--;
+	int first = path->peek()->getFirsVisible();
+	int current = path->peek()->getCurrent();
+	MenuEntry** menu = path->peek()->getMenu();
+
+	if (current != 0) {
+		current--;
 	} else {
-		currentEntry++;
-		while(currentMenu()[currentEntry+1] != NULL) {
-			++currentEntry;
+		current++;
+		while (menu[current + 1] != NULL) {
+			++current;
 		}
-		firstVisibleEntry = display->getRows();
+		first = display->getRows();
 	}
-	if (currentEntry < firstVisibleEntry) {
-		firstVisibleEntry = currentEntry;
+	if (current < first) {
+		first = current;
 	}
+	path->peek()->setCurrent(current);
+	path->peek()->setFirstVisible(first);
 }
 
 void MenuManager::down() {
-	if (currentMenu()[currentEntry+1] != NULL) {
-		currentEntry++;
+	int first = path->peek()->getFirsVisible();
+	int current = path->peek()->getCurrent();
+	MenuEntry** menu = path->peek()->getMenu();
+
+	if (menu[current + 1] != NULL) {
+		current++;
 	} else {
-		currentEntry = firstVisibleEntry = 0;
+		current = first = 0;
 	}
-	if(currentEntry - firstVisibleEntry  == display->getRows()) {
-		firstVisibleEntry++;
+	if (current - first == display->getRows()) {
+		first++;
 	}
+	path->peek()->setCurrent(current);
+	path->peek()->setFirstVisible(first);
 }
 
 void MenuManager::select() {
-	MenuEntry* current = currentMenu()[currentEntry];
-	if (current->hasChilds()) {
-		path.push(current);
-		currentEntry = firstVisibleEntry = 0;
+	int current = path->peek()->getCurrent();
+	MenuEntry** menu = path->peek()->getMenu();
+	MenuEntry* currentMenu = menu[current];
+
+	if (currentMenu->hasChilds()) {
+		path->push(new State(currentMenu->getChilds(), 0, 0));
 	}
-	current->execute();
+	currentMenu->execute();
 }
 
 void MenuManager::back() {
-}
-
-MenuEntry** MenuManager::currentMenu() {
-	if(path.isEmpty()) {
-		return menu;
+	State* st = path->pop();
+	if (path->isEmpty()) {
+		path->push(st);
 	}
-	return path.peek()->getChilds();
 }
 
 MenuManager::~MenuManager() {
@@ -81,11 +98,11 @@ MenuManager::~MenuManager() {
 void padTitle(char buffer[], const char* str, unsigned int cols) {
 	unsigned int i = 0;
 	buffer[i++] = ' ';
-	unsigned int size = strlen(str) > cols-1 ? cols-1 : strlen(str);
+	unsigned int size = strlen(str) > cols - 1 ? cols - 1 : strlen(str);
 	for (; i <= size; i++) {
-		buffer[i] = str[i-1];
+		buffer[i] = str[i - 1];
 	}
-	for(; i < cols; i++) {
+	for (; i < cols; i++) {
 		buffer[i] = ' ';
 	}
 	buffer[i] = '\0';

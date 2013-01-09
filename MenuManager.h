@@ -11,6 +11,7 @@
 #include "MenuEntry.h"
 #include "Display.h"
 #include "Queue.h"
+#include "State.h"
 
 enum MenuAction {
 	UP, DOWN, SELECT, BACK
@@ -27,12 +28,8 @@ public:
 	void back();
 	~MenuManager();
 private:
-	MenuEntry** menu;
 	Display* display;
-	int firstVisibleEntry;
-	int currentEntry;
-	Queue path;
-	MenuEntry** currentMenu();
+	Queue<State*> *path;
 };
 
 #endif /* MENUMANAGER_H_ */

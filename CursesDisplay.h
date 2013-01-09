@@ -18,6 +18,5 @@ public:
 	~CursesDisplay();
 };
 
-#endif // CONSOLE DISPLAY
-
+#endif // CURSES DISPLAY
 #endif // TEST

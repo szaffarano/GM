@@ -16,7 +16,7 @@ public:
 	MenuEntry** getChilds();
 	~MenuEntry();
 private:
-	char* title;
+	const char* title;
 	void* data;
 	Callback callback;
 	MenuEntry** childs;

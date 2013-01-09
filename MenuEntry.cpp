@@ -3,18 +3,12 @@
 #include <string.h>
 
 MenuEntry::MenuEntry(const char* title, MenuEntry** childs) {
-	this->title = new char[strlen(title)];
-	for(unsigned int i = 0; i < strlen(title); i++) {
-		this->title[i] = title[i];
-	}
+	this->title = title;
 	this->childs = childs;
 }
 
 MenuEntry::MenuEntry(const char* title, Callback callback, void* data) {
-	this->title = new char[strlen(title)];
-	for(unsigned int i = 0; i < strlen(title); i++) {
-		this->title[i] = title[i];
-	}
+	this->title = title;
 	this->callback = callback;
 	this->data = data;
 }
@@ -24,11 +18,11 @@ bool MenuEntry::hasChilds() {
 }
 
 const char* MenuEntry::getTitle() {
-	return this->title;
+	return title;
 }
 
 void MenuEntry::execute() {
-	if(callback != NULL) {
+	if (callback != NULL) {
 		callback(data);
 	}
 }

@@ -10,21 +10,56 @@
 #define QUEUE_
 
 /**
- * @TODO: que funcione con templates y que se redimencione automáticamente al llenarse.
+ * El por qué no se puede separar .h de .cpp :(
+ *
+ * @see http://www.parashift.com/c++-faq-lite/separate-template-fn-defn-from-decl.html
  */
+template<class T>
 class Queue {
-	MenuEntry* queue[20];
+	T* queue;
 	int idx;
 	int size;
 public:
-	Queue();
-	void print();
-	MenuEntry* push(MenuEntry* entry);
-	MenuEntry* pop();
-	MenuEntry* peek();
-	bool isEmpty();
-	bool isFull();
-	~Queue();
+	Queue(int size) {
+		queue = new T[size];
+		for (int i = 0; i < size; i++) {
+			queue[i] = NULL;
+		}
+		idx = -1;
+		this->size = size;
+	}
+	T push(T entry) {
+		if (isFull()) {
+			return NULL;
+		}
+
+		queue[++idx] = entry;
+
+		return queue[idx - 1];
+	}
+	T pop() {
+		if (isEmpty()) {
+			return NULL;
+		}
+		T entry = queue[idx];
+		queue[idx--] = NULL;
+		return entry;
+	}
+	T peek() {
+		if (isEmpty()) {
+			return NULL;
+		}
+		return queue[idx];
+	}
+	bool isEmpty() {
+		return idx == -1;
+	}
+	bool isFull() {
+		return idx == size - 1;
+	}
+	~Queue() {
+		delete[] queue;
+	}
 };
 
 #endif /* QUEUE_ */
