@@ -17,7 +17,7 @@ public:
 	virtual void setCursor(uint8_t, uint8_t) = 0;
 	virtual size_t print(const char[]) = 0;
 	virtual size_t print(char) = 0;
-	~Display() {
+	virtual ~Display() {
 	}
 };
 

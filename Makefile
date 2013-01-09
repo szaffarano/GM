@@ -1,7 +1,7 @@
 CXXFLAGS=-Iinclude -Wall -DTEST
 
-main: MenuEntry.o ConsoleDisplay.o main.o
-	${CXX} ${CXXFLAGS} -o main $^
+main: MenuEntry.o CursesDisplay.o main.o
+	${CXX} ${CXXFLAGS} -o main $^ -lncurses
 
 %.o: src/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

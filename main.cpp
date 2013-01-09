@@ -1,10 +1,14 @@
 #include "MenuEntry.h"
-#include "ConsoleDisplay.h"
+#include "CursesDisplay.h"
 #include <stdio.h>
+#include <curses.h>
+#include <unistd.h>
 
-void pp(MenuEntry* menu[], int indent = 0);
+static void pp(Display* display, MenuEntry* menu[], int indent = 0);
 
 int main(int argc, char* argv[]) {
+	Display* display = new CursesDisplay(16, 2);
+	
 	MenuEntry* tempChilds[] = {
 			new MenuEntry("Setear Temp.", NULL, NULL),
 			new MenuEntry("Setear delta", NULL, NULL),
@@ -31,12 +35,26 @@ int main(int argc, char* argv[]) {
 			new MenuEntry("Volver", NULL, NULL),
 			NULL };
 
-	pp(menu);
+	//pp(display, menu);
+	display->setCursor(0,0);
+	display->print("hola");
+	display->setCursor(0,1);
+	display->print("mundo");
+	
+	getch();
+	
+	display->clear();
+	
+	char c = getch();
+	
+	delete display;
 
+	printf("saliste con %d\n", c);
+	
 	return 0;
 }
 
-void pp(MenuEntry* menu[], int indent) {
+void pp(Display* display, MenuEntry* menu[], int indent) {
 	int i = 0;
 
 	char prefix[indent + 1];
@@ -50,10 +68,12 @@ void pp(MenuEntry* menu[], int indent) {
 		MenuEntry* entry = menu[i];
 		char s[128];
 		sprintf(s, "%s%s\n", prefix, entry->getTitle());
-		ConsoleDisplay().print(s);
+		display->print(s);
 		if (entry->hasChilds()) {
-			pp(entry->getChilds(), indent + 1);
+			pp(display, entry->getChilds(), indent + 1);
 		}
 		i++;
 	}
 }
+
+
