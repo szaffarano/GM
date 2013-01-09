@@ -13,12 +13,18 @@ typedef int uint8_t;
 
 class Display {
 public:
+	Display(int, int);
 	virtual void clear() = 0;
 	virtual void setCursor(uint8_t, uint8_t) = 0;
 	virtual size_t print(const char[]) = 0;
 	virtual size_t print(char) = 0;
+	int getRows();
+	int getCols();
 	virtual ~Display() {
 	}
+protected:
+	int rows;
+	int cols;
 };
 
 #endif

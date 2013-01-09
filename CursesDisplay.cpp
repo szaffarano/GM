@@ -4,10 +4,7 @@
 static void fill(char* arr, int size, char value);
 static void nextFrame();
 
-CursesDisplay::CursesDisplay(int cols, int rows) {
-	this->cols = cols;
-	this->rows = rows;
-
+CursesDisplay::CursesDisplay(int cols, int rows): Display(cols, rows) {
 	initscr();
 
 	curs_set(0);

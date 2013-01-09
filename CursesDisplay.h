@@ -14,9 +14,6 @@ public:
 	size_t print(const char[]);
 	size_t print(const char);
 	~CursesDisplay();
-private:
-	int rows;
-	int cols;
 };
 
 #endif

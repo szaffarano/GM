@@ -1,5 +1,6 @@
 #include "MenuEntry.h"
 #include "CursesDisplay.h"
+#include "MenuManager.h"
 #include <stdio.h>
 #include <curses.h>
 #include <unistd.h>
@@ -36,6 +37,7 @@ int main(int argc, char* argv[]) {
 			NULL };
 
 	//pp(display, menu);
+	/*
 	display->setCursor(0,0);
 	display->print("hola");
 	display->setCursor(0,1);
@@ -50,6 +52,23 @@ int main(int argc, char* argv[]) {
 	delete display;
 
 	printf("saliste con %d\n", c);
+	
+	*/
+	
+	MenuManager* mm = new MenuManager(menu, display);
+	mm->draw();
+	
+	getch();
+	
+	mm->down();
+	mm->draw();
+	getch();
+	mm->up();
+	mm->draw();
+	getch();
+	
+	delete mm;
+	delete display;
 	
 	return 0;
 }

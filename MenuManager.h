@@ -17,17 +17,17 @@ enum MenuAction {
 
 class MenuManager {
 public:
-	MenuManager(MenuEntry* menu[], Display* display);
+	MenuManager(MenuEntry** menu, Display* display);
 	void draw();
 	void execute(MenuAction action);
 	void up();
 	void down();
 	void select();
 	void back();
+	~MenuManager();
 private:
-	MenuEntry* menu[];
-	MenuEntry* current;
-	MenuEntry* parent;
+	MenuEntry** menu;
+	int selected;
 	Display* display;
 };
 
